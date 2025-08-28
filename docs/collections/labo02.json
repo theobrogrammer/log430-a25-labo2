@@ -121,6 +121,24 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "/products/:id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/products/99",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"products",
+								"99"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
