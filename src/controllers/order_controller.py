@@ -30,7 +30,7 @@ def remove_order(order_id):
         return jsonify({'error': str(e)}), 500
 
 def get_order(order_id):
-    """Create order, use ReadOrder model"""
+    """Get order by id, use ReadOrder model"""
     try:
         order = get_order_by_id(order_id)
         return jsonify(order), 201

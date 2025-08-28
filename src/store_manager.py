@@ -5,7 +5,7 @@ Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 
 from flask import Flask, request, jsonify
-from controllers.order_controller import create_order, remove_order
+from controllers.order_controller import create_order, remove_order, get_order
 from controllers.product_controller import create_product, remove_product, get_product
 from controllers.user_controller import create_user, remove_user, get_user
 app = Flask(__name__)
@@ -48,17 +48,17 @@ def delete_users_id(user_id):
 
 # Read routes (Queries) 
 @app.get('/orders/<int:order_id>')
-def get_order(order_id):
+def get_order_id(order_id):
     """Get order with a given order_id"""
     return get_order(order_id)
 
 @app.get('/products/<int:product_id>')
-def get_product(product_id):
+def get_product_id(product_id):
     """Get product with a given product_id"""
     return get_product(product_id)
 
 @app.get('/users/<int:user_id>')
-def get_user(user_id):
+def get_user_id(user_id):
     """Get user with a given user_id"""
     return get_user(user_id)
 

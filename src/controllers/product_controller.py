@@ -31,7 +31,7 @@ def remove_product(product_id):
         return jsonify({'error': str(e)}), 500
 
 def get_product(product_id):
-    """Create product, use ReadProduct model"""
+    """Get product by id, use ReadProduct model"""
     try:
         product = get_product_by_id(product_id)
         return jsonify(product), 201

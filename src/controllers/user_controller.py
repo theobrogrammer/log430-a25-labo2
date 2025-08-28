@@ -30,7 +30,7 @@ def remove_user(user_id):
         return jsonify({'error': str(e)}), 500
 
 def get_user(user_id):
-    """Create user, use ReadUser model"""
+    """Get user by id, use ReadUser model"""
     try:
         user = get_user_by_id(user_id)
         return jsonify(user), 201
