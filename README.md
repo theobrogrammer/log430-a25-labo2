@@ -9,7 +9,7 @@
 - Comprendre l’importance d’un ORM (Object-Relational Mapping) pour faciliter l’interaction avec les bases de données.
 
 ## ⚙️ Setup
-Dans ce laboratoire, vous développerez une application de gestion de magasin similaire à celle du labo 01. Cependant, cette application sera plus complexe puisqu’elle permettra la gestion des commandes, des articles et des utilisateurs.
+Dans ce laboratoire, vous développerez une application de gestion de magasin similaire à celle du labo 01. Cependant, cette application sera plus complexe puisqu’elle permettra la gestion des commandes, des articles et des utilisateurs. Veuillez utiliser les diagrammes UML disponibles dans le dossier `docs/views` comme référence pour l’implémentation.
 
 L’application est une API qui reçoit des requêtes d’un front-end, puis communique avec un serveur de base de données pour retourner les informations (architecture en trois couches).
 
