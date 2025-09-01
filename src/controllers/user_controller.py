@@ -3,36 +3,29 @@ User controller
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+from commands.write_user import insert_user, delete_user_by_id
+from queries.read_user import get_users
 
-from flask import jsonify
-from commands.write_user import insert_user, delete_user
-from queries.read_user import get_user_by_id
-
-def create_user(request):
+def create_user(name, email):
     """Create user, use WriteUser model"""
-    payload = request.get_json() or {}
-    name = payload.get('name')
-    email = payload.get('email')
     try:
-        user_id = insert_user(name, email)
-        return jsonify({'user_id': user_id}), 201
+        return insert_user(name, email)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la création de l'enregistrement. Veuillez consulter les logs pour plus d'informations."
 
-def remove_user(user_id):
+def delete_user(user_id):
     """Delete user, use WriteUser model"""
     try:
-        deleted = delete_user(user_id)
-        if deleted:
-            return jsonify({'deleted': True})
-        return jsonify({'deleted': False}), 404
+        return delete_user_by_id(user_id)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la supression de l'enregistrement. Veuillez consulter les logs pour plus d'informations."
 
-def get_user(user_id):
-    """Get user by id, use ReadUser model"""
+def list_users(limit):
+    """Get last X users, use ReadUser model"""
     try:
-        user = get_user_by_id(user_id)
-        return jsonify(user), 201
+        return get_users(limit)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la requête de base de données. Veuillez consulter les logs pour plus d'informations."

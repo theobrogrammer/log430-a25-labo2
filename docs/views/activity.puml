@@ -1,12 +1,13 @@
 @startuml
     start
-        :Choisir une option de gestion des commandes;
+        :Accéder au formulaire de commandes;
+        note left : De même, nous pouvons accéder au formulaire d'utilisateurs et d'articles
         if (Ajouter une commande) then (oui)
+            :Ajouter un utilisateur à la commande;
             :Ajouter les articles à la commande;
-            note left : De même, nous pouvons ajouter/supprimer des utilisateurs et des articles
             :Confirmer la commande;
         elseif (Supprimer une commande) then (oui) 
-            :Saisir un ID de commande;
+            :Choisir une commande;
             :Confirmer la suppression;
         elseif (Voir rapport : les plus gros acheteurs) then (oui)
             :Voir le rapport;

@@ -3,46 +3,48 @@ Order controller
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+from commands.write_order import insert_order, delete_order, sync_all_orders_to_redis
+from queries.read_order import get_orders_from_mysql
 
-from flask import jsonify
-from commands.write_order import insert_order, delete_order
-from queries.read_order import get_order_by_id
-
-def create_order(request):
+def create_order(user_id, items):
     """Create order, use WriteOrder model"""
-    payload = request.get_json() or {}
-    user_id = payload.get('user_id')
-    items = payload.get('items', [])
     try:
-        order_id = insert_order(user_id, items)
-        return jsonify({'order_id': order_id}), 201
+        return insert_order(user_id, items)
+    except ValueError as e:
+        return str(e)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la création de l'enregistrement. Veuillez consulter les logs pour plus d'informations."
 
 def remove_order(order_id):
     """Delete order, use WriteOrder model"""
     try:
-        deleted = delete_order(order_id)
-        if deleted:
-            return jsonify({'deleted': True})
-        return jsonify({'deleted': False}), 404
+        return delete_order(order_id)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la supression de l'enregistrement. Veuillez consulter les logs pour plus d'informations."
 
-def get_order(order_id):
-    """Get order by id, use ReadOrder model"""
+def list_orders_from_mysql(limit):
+    """Get last X orders from MySQL, use ReadOrder model"""
     try:
-        order = get_order_by_id(order_id)
-        return jsonify(order), 201
+        return get_orders_from_mysql(limit)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la requête de base de données. Veuillez consulter les logs pour plus d'informations."
     
+def list_orders_from_redis(limit):
+    """Get last X orders from Redis, use ReadOrder model"""
+    try:
+        return get_orders_from_mysql(limit)
+    except Exception as e:
+        print(e)
+        return "Une erreur s'est produite lors de la requête de base de données. Veuillez consulter les logs pour plus d'informations."
+    
+def populate_redis_from_mysql():
+   """Populate Redis with orders from MySQL, only if MySQL is empty"""
+   sync_all_orders_to_redis()
+
 def get_report_highest_spending_users():
     """Get orders report: highest spending users"""
-    # TODO: appeler la méthode correspondante dans read_order.py
-    return []
-
-def get_report_best_selling_products():
-    """Get orders report: best selling products"""
     # TODO: appeler la méthode correspondante dans read_order.py
     return []

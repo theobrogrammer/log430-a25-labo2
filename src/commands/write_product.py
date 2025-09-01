@@ -4,13 +4,14 @@ SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 
+from sqlalchemy import desc
 from models.product import Product
 from db import get_sqlalchemy_session
 
 def insert_product(name: str, sku: str, price: float):
     """Insert product with items in MySQL"""
-    if not name or not sku or not price or price <= 0:
-        raise ValueError("Cannot create product. A product must have a name, SKU and price.")
+    if not name or not sku or not price or float(price) <= 0:
+        raise ValueError("Vous devez indiquer un nom, numéro SKU et prix unitaire pour l'article.")
     
     session = get_sqlalchemy_session()
 
@@ -27,8 +28,8 @@ def insert_product(name: str, sku: str, price: float):
         session.close()
 
 
-def delete_product(product_id: int):
-    """Delete product in MySQL"""
+def delete_product_by_id(product_id: int):
+    """Delete product by ID in MySQL"""
     session = get_sqlalchemy_session()
     try:
         product = session.query(Product).filter(Product.id == product_id).first()

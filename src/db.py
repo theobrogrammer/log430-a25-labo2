@@ -22,7 +22,8 @@ def get_mysql_conn():
 
 def get_redis_conn():
     """Get a Redis connection using env variables"""
-    return redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, db=config.REDIS_DB, decode_responses=True)
+    session = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, db=config.REDIS_DB, decode_responses=True)
+    return session
 
 def get_sqlalchemy_session():
     """Get an SQLAlchemy ORM session using env variables"""

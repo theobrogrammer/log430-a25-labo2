@@ -1,3 +1,21 @@
-@startuml 
-    [Gestion des commandes]
+@startuml
+package View {
+    [OrderView] 
+}
+
+package Controller {
+    [OrderController] 
+}
+
+package Model {
+    [Order] 
+    [OrderItem]
+}
+
+[OrderView] --> [OrderController] : Demander la création d'une commande
+[OrderController] --> [Order] : Créer une commande
+[OrderController] --> [OrderItem] : Créer les articles de la commande
+[OrderItem] --> [OrderController] : Notifier le Controller
+[Order] --> [OrderController] : Notifier le Controller
+[OrderController] --> [OrderView] : Mettre à jour la View 
 @enduml

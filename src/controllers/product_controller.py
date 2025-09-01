@@ -3,37 +3,31 @@ Product controller
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+from commands.write_product import insert_product, delete_product_by_id
+from queries.read_product import get_products
 
-from flask import jsonify
-from commands.write_product import insert_product, delete_product
-from queries.read_product import get_product_by_id
-
-def create_product(request):
+def create_product(name, sku, price):
     """Create product, use WriteProduct model"""
-    payload = request.get_json() or {}
-    name = payload.get('name')
-    sku = payload.get('sku')
-    price = payload.get('price')
     try:
-        product_id = insert_product(name, sku, price)
-        return jsonify({'product_id': product_id}), 201
+        return insert_product(name, sku, price)
+    except ValueError as e:
+        return str(e)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la création de l'enregistrement. Veuillez consulter les logs pour plus d'informations."
 
-def remove_product(product_id):
+def delete_product(product_id):
     """Delete product, use WriteProduct model"""
     try:
-        deleted = delete_product(product_id)
-        if deleted:
-            return jsonify({'deleted': True})
-        return jsonify({'deleted': False}), 404
+        return delete_product_by_id(product_id)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la supression de l'enregistrement. Veuillez consulter les logs pour plus d'informations."
 
-def get_product(product_id):
-    """Get product by id, use ReadProduct model"""
+def list_products(limit):
+    """Get last X products, use ReadProduct model"""
     try:
-        product = get_product_by_id(product_id)
-        return jsonify(product), 201
+        return get_products(limit)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return "Une erreur s'est produite lors de la requête de base de données. Veuillez consulter les logs pour plus d'informations."

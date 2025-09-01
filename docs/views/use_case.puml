@@ -5,10 +5,10 @@
     Vendeur.euse --> (Supprimer un article)
     Vendeur.euse --> (Ajouter un utilisateur)
     Vendeur.euse --> (Supprimer un utilisateur)
-    Vendeur.euse--> (Voir rapport : les plus grands acheteurs)
+    Vendeur.euse--> (Voir rapport : les plus gros acheteurs)
     Vendeur.euse --> (Voir rapport : les articles plus vendus)
     Directeur.trice --> (Ajouter un utilisateur)
     Directeur.trice --> (Supprimer un utilisateur)
-    Directeur.trice --> (Voir rapport : les plus grands acheteurs)
+    Directeur.trice --> (Voir rapport : les plus gros acheteurs)
     Directeur.trice --> (Voir rapport : les articles plus vendus)
 @enduml

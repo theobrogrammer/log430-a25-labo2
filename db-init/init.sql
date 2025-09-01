@@ -1,4 +1,4 @@
--- Create database (optional)
+-- Create database 
 CREATE DATABASE IF NOT EXISTS labo02_db;
 USE labo02_db;
 
@@ -55,3 +55,8 @@ INSERT INTO products (name, sku, price) VALUES
 ('Keyboard DEF', 'KEYBOARD-DEF', 59.50),
 ('Gadget XYZ', 'GADGET-XYZ', 5.75),
 ('27-inch Screen WYZ', 'SCREEN-WYZ', 299.75);
+
+-- Mock data: orders
+INSERT INTO orders (name, user_id, total_amount) VALUES
+(1, 1999.99),
+(2, 59.50);

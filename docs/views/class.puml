@@ -27,22 +27,29 @@
     }
 
     class WriteOrder {
-        + insert_order(Order) : int
+        + insert_order(int, OrderItem[]) : int
         + delete_order(int) : int
         + insert_order_to_redis(Order) : void
         + delete_order_from_redis(int) : void
+        + sync_all_orders_to_redis() : void
     }
 
     class ReadOrder {
         + get_order_by_id(int) : Order
-        + get_highest_spending_users() : JSONArray
-        + get_best_selling_products() : JSONArray
+        + get_orders_from_mysql(int) : Order[]
+        + get_orders_from_redis(int) : Order[]
+        + get_highest_spending_users() : string
+        + get_best_selling_products() : string
     }
 
     class OrderController {
-        + create_order(RequestBody) : JSONObject
-        + delete_order(int) : JSONObject
-        + get_order(int) : Order
+        + create_order(int, OrderItem[]) : int
+        + remove_order(int) : int
+        + list_orders_from_mysql(int) : Order[]
+        + list_orders_from_redis(int) : Order[]
+        + populate_redis_from_mysql() : void
+        + get_report_highest_spending_users() : string
+        + get_report_highest_best_sellers() : string
     }
 
     OrderItem <-- Order

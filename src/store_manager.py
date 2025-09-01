@@ -1,77 +1,98 @@
 """
-Order manager application
+Store manager application
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+import os
+from urllib.parse import parse_qs
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from views.template_view import show_main_menu, show_404_page
+from views.user_view import show_user_form, register_user, remove_user
+from views.product_view import show_product_form, register_product, remove_product
+from views.order_view import show_order_form, register_order, remove_order
+from views.report_view import show_highest_spending_users, show_best_sellers
 
-from flask import Flask, request, jsonify
-from controllers.order_controller import create_order, remove_order, get_order
-from controllers.product_controller import create_product, remove_product, get_product
-from controllers.user_controller import create_user, remove_user, get_user
-app = Flask(__name__)
+class StoreManager(BaseHTTPRequestHandler):
+    def do_GET(self):
+        """ Handle GET requests received by the http.server """
+        id = self.path.split("/")[-1]
+        if self.path == "/" or self.path == "/home":
+            self._send_html(show_main_menu())
+            return
+        if self.path == "/users":
+            self._send_html(show_user_form())
+        elif self.path.startswith("/users/remove/"):
+            response = remove_user(id)
+            self._send_html(response)
+        elif self.path == "/products":
+            self._send_html(show_product_form())
+        elif self.path.startswith("/products/remove/"):
+            response = remove_product(id)
+            self._send_html(response)
+        elif self.path == "/orders":
+            self._send_html(show_order_form())
+        elif self.path.startswith("/orders/remove/"):
+            response = remove_order(id)
+            self._send_html(response)
+        elif self.path == "/orders/reports/highest_spenders":
+            self._send_html(show_highest_spending_users())
+        elif self.path == "/orders/reports/best_sellers":
+            self._send_html(show_best_sellers())
+        elif "/assets" in self.path: # load assets such as images, CSS, etc.
+            self.load_asset()      
+        else:
+            self._send_html(show_404_page(), status=404)
 
-@app.get('/health')
-def health():
-    """Return OK if app is up and running"""
-    return jsonify({'status':'ok'})
+    def do_POST(self):
+        """ Handle POST requests received by the http.server """
+        content_length = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(content_length).decode("utf-8")
+        params = parse_qs(body)
+        if self.path == "/users/add":
+            response = register_user(params)
+            self._send_html(response)
+        elif self.path == "/products/add":
+            response = register_product(params)
+            self._send_html(response)
+        elif self.path == "/orders/add":
+            response = register_order(params)
+            self._send_html(response)
+        else:
+            self._send_html(show_404_page(), status=404)
 
-# Write routes (Commands)
-@app.post('/orders')
-def post_orders():
-    """Create a new order based on information on request body"""
-    return create_order(request)
+    def load_asset(self):
+        """ Load assets from disk based on requested path, then send file contents as a response to the client """
+        path_parts = self.path.split(".")
+        extension = path_parts[1] if len(path_parts) >= 2 else None
+        base_directory = os.path.dirname(__file__)
+        with open(base_directory + self.path, "r") as file:
+            css = "".join(file.readlines())
+            self.send_response(200)
+            self.send_header("Content-type", self.get_mimetype(extension))
+            self.end_headers()
+            self.wfile.write(css.encode("utf-8"))
 
-@app.delete('/orders/<int:order_id>')
-def delete_orders_id(order_id):
-    """Delete an order with a given order_id"""
-    return remove_order(order_id)
+    def get_mimetype(self, extension):
+        """ Get mimetype (https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types) """
+        if (extension == "html"):
+            return "text/html"
+        elif (extension == "css"):
+            return "text/css"
+        elif (extension == "js"):
+            return "text/javascript"
+        elif (extension == "svg"):
+            return "image/svg+xml"
+        else:
+            return "application/octet-stream"
 
-@app.post('/products')
-def post_products():
-    """Create a new product based on information on request body"""
-    return create_product(request)
+    def _send_html(self, html, status=200):
+        """ Send given HTML string as a response to the client """
+        self.send_response(status)
+        self.send_header("Content-type", self.get_mimetype("html"))
+        self.end_headers()
+        self.wfile.write(html.encode("utf-8"))
 
-@app.delete('/products/<int:product_id>')
-def delete_products_id(product_id):
-    """Delete a product with a given product_id"""
-    return remove_product(product_id)
-
-@app.post('/users')
-def post_users():
-    """Create a new user based on information on request body"""
-    return create_user(request)
-
-@app.delete('/users/<int:user_id>')
-def delete_users_id(user_id):
-    """Delete a user with a given user_id"""
-    return remove_user(user_id)
-
-# Read routes (Queries) 
-@app.get('/orders/<int:order_id>')
-def get_order_id(order_id):
-    """Get order with a given order_id"""
-    return get_order(order_id)
-
-@app.get('/products/<int:product_id>')
-def get_product_id(product_id):
-    """Get product with a given product_id"""
-    return get_product(product_id)
-
-@app.get('/users/<int:user_id>')
-def get_user_id(user_id):
-    """Get user with a given user_id"""
-    return get_user(user_id)
-
-@app.get('/orders/reports/highest_spenders')
-def get_orders_highest_spending_users():
-    """Get list of highest speding users, order by total expenditure"""
-    return "Not implemented yet"
-
-@app.get('/orders/reports/best_sellers')
-def get_orders_report_best_selling_products():
-    """Get list of best selling products, order by number of orders"""
-    return "Not implemented yet"
-
-# Start Flask app
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    server = HTTPServer(("0.0.0.0", 5000), StoreManager)
+    print("Server running on http://0.0.0.0:5000")
+    server.serve_forever()
