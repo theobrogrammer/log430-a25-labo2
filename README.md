@@ -11,9 +11,7 @@
 ## ⚙️ Setup
 Dans ce laboratoire, nous continuerons à développer l'application de gestion de magasin que nous avons commencée dans le laboratoire 01. Maintenant l'application deviendra plus complexe puisqu’elle permettra la gestion des commandes, des articles et des utilisateurs dans une interface Web. 
 
-Nous voulons préparer cette application à une charge de lecture et d'écriture élevée. Pour ce faire, nous utiliserons la persistance polyglotte avec [Redis](https://redis.io/docs/latest/develop/clients/redis-py/) et MySQL. Nous communiquons avec MySQL en utilisant [SQLAlchemy](https://www.geeksforgeeks.org/python/sqlalchemy-tutorial-in-python/). Tout au long des activités, vous découvrirez des stratégies pour optimiser la lecture et pour bien structurer et synchroniser les différentes parties de l'application.
-
-Veuillez utiliser les diagrammes UML disponibles dans le dossier `docs/views` comme référence pour l’implémentation.
+> ⚠️ IMPORTANT : Avant de commencer le setup et les activités, veuillez lire la documentation architecturale dans le répertoire `/docs/arc42/docs.pdf`.
 
 ### 1. Faites un fork et clonez le dépôt GitLab
 ```bash
