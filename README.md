@@ -77,4 +77,7 @@ Si tous les tests passent ✅, vos implémentations sont correctes.
 
 ## 📦 Livrables
 - Un fichier .zip contenant l’intégralité du code source du projet Labo 02.
+- Une vidéo résumant votre progression sur l'étape 1 du projet 
+    - Exigences : Maximum 5 minutes, format .mp4 ou .webm. 
+    - Veuillez utiliser un outil tel que [Handbrake](https://handbrake.fr/) pour compresser la vidéo si elle dépasse 20 Mo.
 - Un rapport en .pdf répondant aux 5 questions présentées dans ce document. Il est obligatoire d’illustrer vos réponses avec du code ou des captures de terminal.
