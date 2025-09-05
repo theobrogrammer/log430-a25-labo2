@@ -73,13 +73,7 @@ Le système permet aux employés du magasin de :
 - Synchronisation de données temps réel
 
 ## 9. Décisions d'architecture
-
-| Décision | Justification | Conséquences |
-|----------|---------------|--------------|
-| **Architecture monolithique** | Simplicité de déploiement et cohérence éducative | Évolutivité limitée pour très grandes échelles |
-| **CQRS avec persistance polyglotte** | Optimisation des performances lecture/écriture | Complexité de synchronisation des données |
-| **Redis pour lectures** | Performance élevée pour rapports statistiques | Consommation mémoire et risque de désynchronisation |
-| **SQLAlchemy ORM** | Abstraction et facilité de développement | Léger overhead par rapport au SQL natif |
+Veuillez consulter le fichier `/docs/adr/adr001.md`.
 
 ## 10. Exigences qualité
 
