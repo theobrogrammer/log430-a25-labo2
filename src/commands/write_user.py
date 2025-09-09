@@ -8,7 +8,7 @@ from sqlalchemy import desc
 from models.user import User
 from db import get_sqlalchemy_session
 
-def insert_user(name: str, email: str):
+def add_user(name: str, email: str):
     """Insert user with items in MySQL"""
     if not name or not email:
         raise ValueError("Vous devez indiquer un nom et adresse courriel pour l'utilisateur.")

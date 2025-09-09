@@ -6,6 +6,7 @@ Ce document, basé sur le modèle arc42, décrit une application de gestion de m
 ### Panorama des exigences
 L'application « Store Manager » est un système monolithique avec interface Web pour la gestion des commandes, articles et utilisateurs dans un magasin. Elle sert de projet éducatif pour démontrer :
 - L'implémentation d'une architecture monolithique
+- L'implémentation des concepts DDD (Domain-Driven Design)
 - Le patron CQRS (Command Query Responsibility Segregation) pour séparer les opérations de lecture et d'écriture
 - La persistance polyglotte avec MySQL et Redis pour optimiser les performances
 - L'utilisation d'un ORM (SQLAlchemy) pour faciliter l'interaction avec les bases de données
@@ -18,7 +19,7 @@ L'application « Store Manager » est un système monolithique avec interface We
 | 3 | **Évolutivité** | Support de multiples types de rapports statistiques sans impact sur MySQL |
 
 ### Parties prenantes (Stakeholders)
-- **Développeur.euses** : Apprendre/enseigner l'architecture monolithique, CQRS et la persistance polyglotte
+- **Développeur.euses** : Apprendre/enseigner l'architecture monolithique, CQRS, DDD et la persistance polyglotte
 - **Employé.es du magasin** : Utilisateur.trices gérant les commandes, articles et utilisateurs dans l'interface Web
 - **Gestionnaires du magasin** : Utilisateur.trices consultant les rapports statistiques (top acheteurs, articles populaires)
 
@@ -42,10 +43,11 @@ Le système permet aux employés du magasin de :
 - Générer des rapports statistiques optimisés
 
 ### Contexte technique
-- **Interface** : Application Web Python
-- **Couche CQRS** : Séparation entre `commands/` (écriture) et `queries/` (lecture)
-- **Persistance polyglotte** : MySQL avec SQLAlchemy pour les écritures, Redis pour les lectures optimisées
-- **Synchronisation** : Mécanismes automatiques entre MySQL et Redis
+- **Interface** : Application Web Python.
+- **Couche CQRS** : Séparation entre `commands/` (écriture) et `queries/` (lecture).
+- **Concepts DDD** : Implementation des patrons Value Object et Repository. Utilisation des transactions dans les opérations de base de données pour garantir la cohérence des données.
+- **Persistance polyglotte** : MySQL avec SQLAlchemy pour les écritures, Redis pour les lectures optimisées.
+- **Synchronisation** : Mécanismes automatiques entre MySQL et Redis.
 
 ## 4. Stratégie de solution
 
@@ -69,6 +71,7 @@ Le système permet aux employés du magasin de :
 ## 8. Concepts transversaux
 - Patron CQRS (Command Query Responsibility Segregation)
 - Persistance polyglotte (MySQL + Redis)
+- Concepts DDD (Domain-Driven Design)
 - ORM (Object-Relational Mapping) avec SQLAlchemy
 - Synchronisation de données temps réel
 
@@ -85,7 +88,7 @@ Veuillez consulter le fichier `/docs/adr/adr001.md`.
 ### Maintenabilité
 - Séparation claire CQRS entre commands/ et queries/
 - Code modulaire avec responsabilités bien définies
-- Synchronisation automatique entre bases de données
+- Synchronisation automatique et cohérence des bases de données
 
 ### Évolutivité
 - Architecture préparée pour l'ajout de nouveaux types de rapports
@@ -100,5 +103,6 @@ Non applicable pour cette application.
 | Terme | Définition |
 |-------|------------|
 | **CQRS** | Command Query Responsibility Segregation : séparation des opérations de lecture et d'écriture |
+| **DDD** | Domain-Driven Design : approche de conception logicielle qui nous permet de gérer la complexité d'une application en séparant les responsabilités par domaine et en utilisant la conception tactique et stratégique |
 | **ORM** | Object-Relational Mapping : technique de mapping entre objets et base de données relationnelle |
 | **Persistance polyglotte** | Utilisation de plusieurs technologies de stockage pour différents besoins |

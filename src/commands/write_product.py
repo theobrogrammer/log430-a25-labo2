@@ -8,7 +8,7 @@ from sqlalchemy import desc
 from models.product import Product
 from db import get_sqlalchemy_session
 
-def insert_product(name: str, sku: str, price: float):
+def add_product(name: str, sku: str, price: float):
     """Insert product with items in MySQL"""
     if not name or not sku or not price or float(price) <= 0:
         raise ValueError("Vous devez indiquer un nom, numéro SKU et prix unitaire pour l'article.")

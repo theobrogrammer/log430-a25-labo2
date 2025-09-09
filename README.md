@@ -1,4 +1,4 @@
-# Labo 02 – Architecture monolithique, ORM, CQRS, Persistance polyglotte
+# Labo 02 – Architecture monolithique, ORM, CQRS, Persistance polyglotte, DDD
 <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Ets_quebec_logo.png" width="250">    
 ÉTS - LOG430 - Architecture logicielle - Chargé de laboratoire: Gabriel C. Ullmann, Automne 2025.    
 
@@ -7,6 +7,7 @@
 - Comprendre et appliquer les patrons CQRS (Command Query Responsibility Segregation) pour séparer les opérations de lecture et écrite. 
 - Comprendre et appliquer le CQRS avec une persistance polyglotte afin d’optimiser les opérations de lecture et d’écriture.
 - Comprendre l’importance d’un ORM (Object-Relational Mapping) pour faciliter l’interaction avec les bases de données.
+- Comprendre l'implementation des concepts clés du DDD (Domain-Driven Design)
 
 ## ⚙️ Setup
 Dans ce laboratoire, nous continuerons à développer l'application de gestion de magasin que nous avons commencée dans le laboratoire 01. Maintenant l'application deviendra plus complexe puisqu’elle permettra la gestion des commandes, des articles et des utilisateurs dans une interface Web. 
@@ -28,6 +29,19 @@ docker compose up -d
 
 ### 3. Créez un fichier .env
 Créez un fichier `.env` basé sur `.env.example`. Dans le fichier `.env`, utilisez les mêmes identifiants que ceux mentionnés dans `docker-compose.yml`.
+
+### 4. Observez l'implementation du DDD
+Dans l'application de gestion de magasin, nous retrouvons l’implémentation de plusieurs concepts clés du DDD que nous devons comprendre avant de commencer les activités :
+
+- **Ubiquitous Language** : Les mêmes noms d'entités sont utilisés à la fois par les développeurs et les experts du domaine. Par exemple, des noms tels que Commande/Order, Article/Product, Utilisateur/User apparaissent à la fois dans la documentation, les diagrammes et le code.
+
+- **Value Objects** : les modules du répertoire `models`, tels que `Order`, contiennent le « value object » `OrderItem`. Ce dernier n’a pas d’identité propre en dehors du contexte de `Order` (par exemple, un item de commande n’existe que dans une commande).
+
+- **Aggregates** : les modules du répertoire `commands`, tels que `write_order.py`, assurent la cohérence transactionnelle des données dans MySQL. Par exemple, en cas d’erreur, `write_order.py` appellent la fonction `rollback()` dans SQLAlchemy pour annuler les opérations effectuées dans la base de données et éviter les incohérences. Si tout se passe bien, la méthode `commit()` est appellé afin de confirmer le changement d’état dans MySQL. La méthode `hset` dans Redis fonctinne également de manière cohérente.
+
+- **Repositories** : les modules des répertoires `commands` et `queries`, comme `write_order.py` et `read_order.py`, jouent le rôle de `Repository` dans l'application de gestion de magasin. Ils fournissent des méthodes telles que `add`, `delete` et `get`, et masquent les opérations de base de données réalisées via SQLAlchemy, tout en maintenant la ségrégation entre lecture et l'écriture. Dans un projet non CQRS, nous pourrions créer un seul fichier `order_repository.py` contenant toutes les opérations.
+
+Dans le cadre des activités, nous n'implémenterons pas directement les concepts DDD, mais nous utiliserons des modules qui les implémentent déjà, tels que `write_order.py`.
 
 ## 🧪 Activités pratiques
 

@@ -3,13 +3,13 @@ User controller
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
-from commands.write_user import insert_user, delete_user_by_id
+from commands.write_user import add_user, delete_user_by_id
 from queries.read_user import get_users
 
 def create_user(name, email):
     """Create user, use WriteUser model"""
     try:
-        return insert_user(name, email)
+        return add_user(name, email)
     except Exception as e:
         print(e)
         return "Une erreur s'est produite lors de la création de l'enregistrement. Veuillez consulter les logs pour plus d'informations."

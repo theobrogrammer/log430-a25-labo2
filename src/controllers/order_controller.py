@@ -3,13 +3,13 @@ Order controller
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
-from commands.write_order import insert_order, delete_order, sync_all_orders_to_redis
+from commands.write_order import add_order, delete_order, sync_all_orders_to_redis
 from queries.read_order import get_orders_from_mysql
 
 def create_order(user_id, items):
     """Create order, use WriteOrder model"""
     try:
-        return insert_order(user_id, items)
+        return add_order(user_id, items)
     except ValueError as e:
         return str(e)
     except Exception as e:

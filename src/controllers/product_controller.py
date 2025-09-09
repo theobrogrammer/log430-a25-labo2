@@ -3,13 +3,13 @@ Product controller
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
-from commands.write_product import insert_product, delete_product_by_id
+from commands.write_product import add_product, delete_product_by_id
 from queries.read_product import get_products
 
 def create_product(name, sku, price):
     """Create product, use WriteProduct model"""
     try:
-        return insert_product(name, sku, price)
+        return add_product(name, sku, price)
     except ValueError as e:
         return str(e)
     except Exception as e:

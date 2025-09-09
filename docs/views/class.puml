@@ -27,9 +27,9 @@
     }
 
     class WriteOrder {
-        + insert_order(int, OrderItem[]) : int
+        + add_order(int, OrderItem[]) : int
         + delete_order(int) : int
-        + insert_order_to_redis(Order) : void
+        + add_order_to_redis(Order) : void
         + delete_order_from_redis(int) : void
         + sync_all_orders_to_redis() : void
     }
