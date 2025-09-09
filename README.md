@@ -20,7 +20,14 @@ cd log430-a25-labo2
 ```
 
 ### 2. Préparez l’environnement de développement
-Suivez les mêmes étapes que dans le laboratoire 00. Créez un fichier .env.
+Suivez les mêmes étapes que dans le laboratoire 00. La seule différence est que vous démarrerez le conteneur Docker en mode non interactif.
+```bash
+docker build
+docker compose up -d
+```
+
+### 3. Créez un fichier .env
+Créez un fichier `.env` basé sur `.env.example`. Dans le fichier `.env`, utilisez les mêmes identifiants que ceux mentionnés dans `docker-compose.yml`.
 
 ## 🧪 Activités pratiques
 
