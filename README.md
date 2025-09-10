@@ -20,17 +20,10 @@ git clone https://github.com/guteacher/log430-a25-labo2
 cd log430-a25-labo2
 ```
 
-### 2. Préparez l’environnement de développement
-Suivez les mêmes étapes que dans le laboratoire 00. La seule différence est que vous démarrerez le conteneur Docker en mode non interactif.
-```bash
-docker build
-docker compose up -d
-```
-
-### 3. Créez un fichier .env
+### 2. Créez un fichier .env
 Créez un fichier `.env` basé sur `.env.example`. Dans le fichier `.env`, utilisez les mêmes identifiants que ceux mentionnés dans `docker-compose.yml`.
 
-### 4. Ouvrez le port 5000 dans la conteneur
+### 3. Ouvrez le port 5000 dans la conteneur
 Les services dans le conteneur sont isolés par défaut. Dans le fichier `docker-compose.yml`, faites une correspondence entre le port 5000 du service `store_manager` et le port 5000 de votre ordinateur pour utiliser l'interface Web. 
 ```bash
 ports:
@@ -38,6 +31,13 @@ ports:
 ```
 
 > > 📝 **NOTE** : Si votre conteneur est dans une machine virtuelle et vous voulez accéder le port 5000 à partir de votre ordinateur de développement, il sera nécessaire également d'ouvrir la porte 5000 de la machine virtuelle à l'exterieur.
+
+### 4. Préparez l’environnement de développement
+Suivez les mêmes étapes que dans le laboratoire 00. La seule différence est que vous démarrerez le conteneur Docker en mode non interactif.
+```bash
+docker build
+docker compose up -d
+```
 
 ### 5. Observez l'implementation du DDD
 Dans l'application de gestion de magasin, nous retrouvons l’implémentation de plusieurs concepts clés du DDD que nous devons comprendre avant de commencer les activités :
