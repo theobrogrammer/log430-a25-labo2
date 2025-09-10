@@ -10,6 +10,14 @@ from controllers.product_controller import create_product, delete_product, list_
 def show_product_form():
     """ Show product form and list """
     products = list_products(10)
+    rows = [f"""
+            <tr>
+                <td>{product.id}</td>
+                <td>{product.name}</td>
+                <td>{product.sku}</td>
+                <td>${product.price}</td>
+                <td><a href="/products/remove/{product.id}">Supprimer</a></td>
+            </tr> """ for product in products]
     return get_template(f"""
         <h2>Articles</h2>
         <p>Voici les 10 derniers enregistrements :</p>
@@ -21,14 +29,7 @@ def show_product_form():
                 <th>Prix unitaire</th> 
                 <th>Actions</th> 
             </tr>  
-            {" ".join([f"""
-                    <tr>
-                       <td>{product.id}</td>
-                       <td>{product.name}</td>
-                       <td>{product.sku}</td>
-                       <td>${product.price}</td>
-                       <td><a href="/products/remove/{product.id}">Supprimer</a></td>
-                    </tr> """ for product in products])}
+            {" ".join(rows)}
         </table>
         <h2>Enregistrement</h2>
         <form method="POST" action="/products/add">

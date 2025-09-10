@@ -15,6 +15,14 @@ def show_order_form():
     orders = list_orders_from_mysql(10)
     products = list_products(99)
     users = list_users(99)
+    order_rows = [f"""
+            <tr>
+                <td>{order.id}</td>
+                <td>${order.total_amount}</td>
+                <td><a href="/orders/remove/{order.id}">Supprimer</a></td>
+            </tr> """ for order in orders]
+    user_rows = [f"""<option key={user.id} value={user.id}>{user.name}</option>""" for user in users]
+    product_rows = [f"""<option key={product.id} value={product.id}>{product.name} (${product.price})</option>""" for product in products]
     return get_template(f"""
         <h2>Commandes</h2>
         <p>Voici les 10 derniers enregistrements :</p>
@@ -24,25 +32,20 @@ def show_order_form():
                 <th>Total</th> 
                 <th>Actions</th> 
             </tr>  
-            {" ".join([f"""
-                    <tr>
-                       <td>{order.id}</td>
-                       <td>${order.total_amount}</td>
-                       <td><a href="/orders/remove/{order.id}">Supprimer</a></td>
-                    </tr> """ for order in orders])}
+            {" ".join(order_rows)}
         </table>
         <h2>Enregistrement</h2>
         <form method="POST" action="/orders/add">
             <div class="mb-3">
                 <label class="form-label">Utilisateur</label>
                 <select class="form-control" name="user_id" required>
-                    {" ".join([f"""<option key={user.id} value={user.id}>{user.name}</option>""" for user in users])}
+                    {" ".join(user_rows)}
                 </select>
             </div>
             <div class="mb-3">
                 <label class="form-label">Article</label>
                 <select class="form-control" name="product_id" required>
-                    {" ".join([f"""<option key={product.id} value={product.id}>{product.name} (${product.price})</option>""" for product in products])}
+                    {" ".join(product_rows)}
                 </select>
             </div>
             <div class="mb-3">
