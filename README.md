@@ -59,22 +59,22 @@ Dans `commands/write_order.py`, la méthode `sync_all_orders_to_redis` charge to
 
 > 💡 **Question 1** : Lorsque l'application démarre, la synchronisation entre Redis et MySQL est-elle initialement déclenchée par quelle méthode ? Veuillez inclure le code pour illustrer votre réponse.
 
-### 2. Modifier la View de commandes pour utiliser uniquement Redis
+### 2. Modifiez la View de commandes pour utiliser uniquement Redis
 Dans `views/order_view.py`, remplacez l'appel à `list_orders` pour un appel à une autre méthode qui lit les commandes à partir de Redis. Veuillez terminer la méthode  `get_orders_from_redis` qu'existe déjà dans `queries/read_order.py`.
 
 > 💡 **Question 2** : Quelles methodes avez-vous utilisées pour lire des données à partir de Redis ? Veuillez inclure le code pour illustrer votre réponse.
 
-### 2. Insérer dans Redis
+### 2. Insérez dans Redis
 Dans `commands/write_order.py`, à chaque commande ajoutée dans MySQL, insérez-la également dans Redis. Même si cela peut paraître redondant, cela nous permettra de générer des rapports statistiques sur les commandes sans lire directement dans MySQL. Pour une application à forte charge (grand nombre de requêtes), cela permet de réduire la pression sur MySQL.
 
 > 💡 **Question 3** : Quelles methodes avez-vous utilisées pour ajouter des données dans Redis ? Veuillez inclure le code pour illustrer votre réponse.
 
-### 3. Supprimer dans Redis
+### 3. Supprimez dans Redis
 Toujours dans `commands/write_order.py`, à chaque commande supprimée de MySQL, supprimez-la également de Redis afin de maintenir la consistance des données.
 
 > 💡 **Question 4** : Quelles methodes avez-vous utilisées pour supprimer des données dans Redis ? Veuillez inclure le code pour illustrer votre réponse.
 
-### 4. Créer un rapport : les plus gros acheteurs
+### 4. Créez un rapport : les plus gros acheteurs
 Dans `queries/read_order.py`, créez une méthode qui obtient la liste le top 10 des utilisateurs ayant le plus dépensé en commandes. Utilisez la méthode `sorted` pour trier le résultat par total dépensé (ordre décroissant).
 
 ```python
@@ -86,7 +86,7 @@ highest_spending_users = sorted(expenses_by_user.items(), key=lambda item: item[
 
 > 💡 **Question 5** : Si nous souhaitions créer un rapport similaire, mais présentant les produits les plus vendus, les informations dont nous disposons actuellement dans Redis sont-elles suffisantes, ou devrions-nous checher dans le tables sur MySQL ? Si nécessaire, quelles informations devrions-nous ajouter à Redis ? Veuillez inclure le code pour illustrer votre réponse.
 
-### 5. Créer un rapport : les articles plus vendus
+### 5. Créez un rapport : les articles plus vendus
 Dans `queries/read_order.py`, créez une méthode qui obtient la liste des articles les plus vendus. Triez le résultat par nombre d'articles vendus (ordre décroissant). Pour obtenir les données nécessaires à ce rapport, gardez chaque article de la commande (`order_items`) synchronisé avec Redis. Utilisez la méthode `incr` pour mettre à jour la quantité vendue de chaque article à chaque fois qu'une nouvelle commande est ajoutée à MySQL. 
 
 ```python
