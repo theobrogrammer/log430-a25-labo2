@@ -8,7 +8,7 @@ from controllers.order_controller import populate_redis_from_mysql
 
 def show_main_menu():
     """ Show main menu, populate Redis if needed """
-    populate_redis_from_mysql()
+    populate_redis_from_mysql()  # Synchronize MySQL data to Redis
     return get_template("""
         <nav>
             <h2>Formulaires d'enregistrement</h2>

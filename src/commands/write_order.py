@@ -100,11 +100,74 @@ def delete_order(order_id: int):
 def add_order_to_redis(order_id, user_id, total_amount, items):
     """Insert order to Redis"""
     r = get_redis_conn()
-    print(r)
+    
+    try:
+        # Créer une clé unique pour la commande
+        order_key = f"order:{order_id}"
+        
+        # Préparer les données de la commande
+        order_data = {
+            "id": str(order_id),
+            "user_id": str(user_id),
+            "total_amount": str(total_amount),
+            "items_count": str(len(items))
+        }
+        
+        # Ajouter les informations des items
+        items_list = []
+        for item in items:
+            item_str = f"product_id:{item['product_id']},quantity:{item['quantity']}"
+            items_list.append(item_str)
+        order_data["items"] = ";".join(items_list)
+        
+        # Stocker la commande dans Redis
+        r.hset(order_key, mapping=order_data)
+        print(f"Order {order_id} added to Redis")
+        
+        # Incrémenter le compteur pour chaque produit vendu (pour les rapports)
+        for item in items:
+            product_key = f"product:{item['product_id']}:sold"
+            r.incr(product_key, int(item['quantity']))
+            
+    except Exception as e:
+        print(f"Error adding order {order_id} to Redis: {e}")
 
 def delete_order_from_redis(order_id):
     """Delete order from Redis"""
-    pass
+    r = get_redis_conn()
+    
+    try:
+        order_key = f"order:{order_id}"
+        
+        # Récupérer les informations de la commande avant de la supprimer
+        # pour décrémenter les compteurs de produits
+        order_data = r.hgetall(order_key)
+        
+        if order_data and "items" in order_data:
+            # Parse les items pour décrémenter les compteurs
+            items_str = order_data["items"]
+            if items_str:
+                items_list = items_str.split(";")
+                for item_str in items_list:
+                    # Parse product_id:123,quantity:2
+                    item_parts = item_str.split(",")
+                    if len(item_parts) == 2:
+                        product_id = item_parts[0].split(":")[1]
+                        quantity = int(item_parts[1].split(":")[1])
+                        
+                        # Décrémenter le compteur du produit
+                        product_key = f"product:{product_id}:sold"
+                        r.decr(product_key, quantity)
+        
+        # Supprimer la commande de Redis
+        deleted_count = r.delete(order_key)
+        if deleted_count > 0:
+            print(f"Order {order_id} deleted from Redis")
+        else:
+            print(f"Order {order_id} was not found in Redis")
+            
+    except Exception as e:
+        print(f"Error deleting order {order_id} from Redis: {e}")
 
 def sync_all_orders_to_redis():
     """ Sync orders from MySQL to Redis """
@@ -114,16 +177,30 @@ def sync_all_orders_to_redis():
     rows_added = 0
     try:
         if len(orders_in_redis) == 0:
-            # mysql
-            orders_from_mysql = []
+            # mysql - récupérer toutes les commandes depuis MySQL
+            orders_from_mysql = get_orders_from_mysql()
             for order in orders_from_mysql:
-                # TODO: terminez l'implementation
-                print(order)
+                # Créer une clé unique pour chaque commande dans Redis
+                order_key = f"order:{order.id}"
+                
+                # Stocker les informations de la commande dans Redis comme un hash
+                order_data = {
+                    "id": str(order.id),
+                    "user_id": str(order.user_id),
+                    "total_amount": str(order.total_amount),
+                    "created_at": str(order.created_at) if hasattr(order, 'created_at') else ""
+                }
+                
+                # Ajouter la commande à Redis
+                r.hset(order_key, mapping=order_data)
+                print(f"Synchronized order {order.id} to Redis")
+            
             rows_added = len(orders_from_mysql)
+            print(f"Successfully synchronized {rows_added} orders from MySQL to Redis")
         else:
             print('Redis already contains orders, no need to sync!')
     except Exception as e:
-        print(e)
+        print(f"Error during synchronization: {e}")
         return 0
     finally:
         return len(orders_in_redis) + rows_added

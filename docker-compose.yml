@@ -28,7 +28,7 @@ services:
       MYSQL_USER: labo02
       MYSQL_PASSWORD: labo02
     ports:
-      - "3306:3306"
+      - "3307:3306"  # Port externe changé pour éviter le conflit
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db-init:/docker-entrypoint-initdb.d

@@ -91,7 +91,27 @@ Si votre école autorise l'accès direct aux ports :
 
 ## 🛠️ Dépannage
 
-### Problème : Port mapping manquant dans docker compose ps
+### Problème : Port 3306 déjà utilisé (MySQL)
+Si vous obtenez l'erreur "Bind for 0.0.0.0:3306 failed: port is already allocated" :
+
+```bash
+# Option 1: Arrêter le MySQL système (temporairement)
+sudo systemctl stop mysql
+# ou
+sudo service mysql stop
+
+# Puis redémarrer les conteneurs
+docker compose up -d
+
+# Option 2: Si le port a été changé à 3307 dans docker-compose.yml
+# Rien à faire de spécial, juste relancer
+docker compose down
+docker compose up -d
+
+# Vérifiez que tout fonctionne
+docker compose ps
+curl http://localhost:5000
+```
 Si `docker compose ps` ne montre pas `0.0.0.0:5000->5000/tcp` pour store_manager :
 
 ```bash
@@ -176,5 +196,69 @@ Pour vérifier que tout fonctionne :
 2. **Docker containers running** : `docker compose ps` ✓  
 3. **Port accessible** : `curl http://localhost:5000` depuis votre VM ✓
 4. **Application accessible** : `http://localhost:5000` depuis votre navigateur local ✓
+
+## 🔍 **Comment ça fonctionne : Explication technique**
+
+### **Le chemin complet de votre requête :**
+
+```
+[Votre navigateur Windows] 
+    ↓ http://localhost:5000
+[Tunnel SSH PuTTY]
+    ↓ Redirige vers la VM (10.194.32.231:5000)
+[VM École - Port 5000]
+    ↓ Docker port mapping
+[Conteneur Docker store_manager - Port 5000]
+    ↓ Application Flask
+[Application Web] 🎯
+```
+
+### **Les ports et leur rôle :**
+
+**1. Port 5000 sur votre Windows (localhost:5000) :**
+- C'est un **port virtuel** créé par le tunnel SSH PuTTY
+- Quand vous tapez `localhost:5000`, PuTTY intercepte cette connexion
+- PuTTY la redirige automatiquement vers la VM via le tunnel SSH chiffré
+
+**2. Port 5000 sur la VM (10.194.32.231:5000) :**
+- C'est le **port physique** sur la machine virtuelle de l'école
+- Docker mappe ce port vers le conteneur
+- Configuration dans `docker-compose.yml` : `"5000:5000"`
+
+**3. Port 5000 dans le conteneur Docker :**
+- C'est là où l'application Flask écoute réellement
+- L'application Flask est configurée pour écouter sur `0.0.0.0:5000` (toutes les interfaces)
+- Cela permet au trafic venant de l'extérieur du conteneur d'atteindre l'app
+
+### **Pourquoi le tunnel SSH est génial :**
+
+**Sécurité :**
+- Tout le trafic entre votre Windows et la VM est **chiffré** via SSH
+- Même si quelqu'un écoute le réseau, il ne peut pas voir vos données
+- Pas besoin d'ouvrir des ports dangereux sur le pare-feu de l'école
+
+**Simplicité :**
+- Vous accédez à `localhost:5000` comme si l'app tournait localement
+- Mais en réalité elle tourne sur la VM distante
+- PuTTY fait toute la magie de redirection en arrière-plan
+
+### **Schéma récapitulatif :**
+
+```
+┌─────────────────┐    SSH Tunnel    ┌─────────────────┐    Docker    ┌─────────────────┐
+│  Votre Windows  │ ◄─────────────► │   VM École      │ ◄─────────► │  Conteneur      │
+│  localhost:5000 │                 │ 10.194.32.231   │             │  Flask App      │
+│                 │                 │      :5000      │             │      :5000      │
+└─────────────────┘                 └─────────────────┘             └─────────────────┘
+        ↑                                   ↑                               ↑
+    Navigateur                         Port mapping                    Application
+```
+
+### **En résumé :**
+1. **PuTTY** : Crée un tunnel sécurisé Windows ↔ VM
+2. **Docker port mapping** : Expose le conteneur sur la VM  
+3. **Flask app** : Écoute dans le conteneur et répond aux requêtes
+
+Cette architecture est **sécurisée, flexible et professionnelle** - exactement comme les développeurs accèdent à des applications sur des serveurs distants dans le monde professionnel ! 🚀
 
 Bonne utilisation ! 🚀
