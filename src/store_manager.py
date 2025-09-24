@@ -105,13 +105,15 @@ class StoreManager(BaseHTTPRequestHandler):
         # Test config loading
         debug_output.append("<h2>1. Configuration</h2>")
         try:
-            load_dotenv('a.env')
+            load_dotenv('../a.env')
             debug_output.append(f"<p>DB_HOST: {os.getenv('DB_HOST')}</p>")
             debug_output.append(f"<p>DB_PORT: {os.getenv('DB_PORT')}</p>")
             debug_output.append(f"<p>DB_NAME: {os.getenv('DB_NAME')}</p>")
             debug_output.append(f"<p>DB_USER: {os.getenv('DB_USER')}</p>")
+            debug_output.append(f"<p>DB_PASS: {'***' if os.getenv('DB_PASS') else 'NON TROUVÉ'}</p>")
             debug_output.append(f"<p>REDIS_HOST: {os.getenv('REDIS_HOST')}</p>")
             debug_output.append(f"<p>REDIS_PORT: {os.getenv('REDIS_PORT')}</p>")
+            debug_output.append(f"<p>REDIS_DB: {os.getenv('REDIS_DB')}</p>")
         except Exception as e:
             debug_output.append(f"<p style='color:red'>Erreur config: {e}</p>")
         
@@ -150,9 +152,10 @@ class StoreManager(BaseHTTPRequestHandler):
         # Test SQLAlchemy
         debug_output.append("<h2>4. Test SQLAlchemy</h2>")
         try:
+            from sqlalchemy import text
             from db import get_sqlalchemy_session
             session = get_sqlalchemy_session()
-            result = session.execute("SELECT COUNT(*) FROM users")
+            result = session.execute(text("SELECT COUNT(*) FROM users"))
             count = result.fetchone()[0]
             debug_output.append(f"<p style='color:green'>✓ SQLAlchemy OK - {count} utilisateurs</p>")
             session.close()
