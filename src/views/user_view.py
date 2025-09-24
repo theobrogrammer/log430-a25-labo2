@@ -9,15 +9,42 @@ from controllers.user_controller import create_user, delete_user, list_users
 
 def show_user_form():
     """ Show user form and list """
-    users = list_users(10)
-    rows = [f"""
-            <tr>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td><a href="/users/remove/{user.id}">Supprimer</a></td>
-            </tr> """ for user in users]
+    try:
+        users = list_users(10)
+        
+        # Vérifier si users est une liste ou un message d'erreur
+        if isinstance(users, str):
+            # C'est un message d'erreur
+            error_html = f"<div class='alert alert-danger'>Erreur: {users}</div>"
+            rows = []
+        elif not users:
+            # Liste vide
+            error_html = "<div class='alert alert-info'>Aucun utilisateur trouvé.</div>"
+            rows = []
+        else:
+            # Liste normale d'utilisateurs
+            error_html = ""
+            rows = []
+            for user in users:
+                try:
+                    rows.append(f"""
+                    <tr>
+                        <td>{user.id}</td>
+                        <td>{user.name}</td>
+                        <td><a href="/users/remove/{user.id}">Supprimer</a></td>
+                    </tr>""")
+                except AttributeError as e:
+                    print(f"User object missing attribute: {e}")
+                    rows.append(f"<tr><td colspan='3'>Erreur: Utilisateur malformé</td></tr>")
+                    
+    except Exception as e:
+        print(f"Error in show_user_form: {e}")
+        error_html = f"<div class='alert alert-danger'>Erreur lors du chargement des utilisateurs: {str(e)}</div>"
+        rows = []
+        
     return get_template(f"""
         <h2>Utilisateurs</h2>
+        {error_html}
         <p>Voici les 10 derniers enregistrements :</p>
         <table class="table">
             <tr>

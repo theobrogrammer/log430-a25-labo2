@@ -9,17 +9,41 @@ from controllers.product_controller import create_product, delete_product, list_
 
 def show_product_form():
     """ Show product form and list """
-    products = list_products(10)
-    rows = [f"""
+    try:
+        products = list_products(10)
+        error_html = ""
+        
+        # Handle case where list_products returns an error string
+        if isinstance(products, str):
+            error_html = f'<div class="alert alert-warning">Erreur: {products}</div>'
+            products = []
+        elif not isinstance(products, list):
+            error_html = '<div class="alert alert-warning">Erreur: Format de données invalide</div>'
+            products = []
+            
+    except Exception as e:
+        print(f"Erreur dans show_product_form: {e}")
+        products = []
+        error_html = '<div class="alert alert-danger">Erreur de connexion à la base de données</div>'
+    
+    try:
+        rows = [f"""
             <tr>
-                <td>{product.id}</td>
-                <td>{product.name}</td>
-                <td>{product.sku}</td>
-                <td>${product.price}</td>
-                <td><a href="/products/remove/{product.id}">Supprimer</a></td>
-            </tr> """ for product in products]
+                <td>{getattr(product, 'id', 'N/A')}</td>
+                <td>{getattr(product, 'name', 'N/A')}</td>
+                <td>{getattr(product, 'sku', 'N/A')}</td>
+                <td>${getattr(product, 'price', '0.00')}</td>
+                <td><a href="/products/remove/{getattr(product, 'id', 'N/A')}">Supprimer</a></td>
+            </tr> """ for product in products if hasattr(product, 'id')]
+    except Exception as e:
+        print(f"Erreur lors de la génération des lignes produits: {e}")
+        rows = []
+        if not error_html:
+            error_html = '<div class="alert alert-warning">Erreur lors de l\'affichage des produits</div>'
+    
     return get_template(f"""
         <h2>Articles</h2>
+        {error_html}
         <p>Voici les 10 derniers enregistrements :</p>
         <table class="table">
             <tr>

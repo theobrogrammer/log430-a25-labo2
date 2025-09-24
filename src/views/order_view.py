@@ -11,20 +11,63 @@ from controllers.user_controller import list_users
 
 def show_order_form():
     """ Show order form and list """
-    # TODO: utilisez Redis seulement
-    orders = list_orders_from_redis(10)
-    products = list_products(99)
-    users = list_users(99)
-    order_rows = [f"""
-            <tr>
-                <td>{order.id}</td>
-                <td>${order.total_amount}</td>
-                <td><a href="/orders/remove/{order.id}">Supprimer</a></td>
-            </tr> """ for order in orders]
-    user_rows = [f"""<option key={user.id} value={user.id}>{user.name}</option>""" for user in users]
-    product_rows = [f"""<option key={product.id} value={product.id}>{product.name} (${product.price})</option>""" for product in products]
+    try:
+        # TODO: utilisez Redis seulement
+        orders = list_orders_from_redis(10)
+        products = list_products(99)
+        users = list_users(99)
+        
+        # Gestion sécurisée des commandes
+        error_html = ""
+        order_rows = []
+        if isinstance(orders, str):
+            error_html += f"<div class='alert alert-danger'>Erreur commandes: {orders}</div>"
+        elif orders:
+            for order in orders:
+                try:
+                    order_rows.append(f"""
+                    <tr>
+                        <td>{order.id}</td>
+                        <td>${order.total_amount}</td>
+                        <td><a href="/orders/remove/{order.id}">Supprimer</a></td>
+                    </tr>""")
+                except AttributeError as e:
+                    print(f"Order object error: {e}")
+                    order_rows.append(f"<tr><td colspan='3'>Commande malformée</td></tr>")
+        
+        # Gestion sécurisée des utilisateurs
+        user_rows = []
+        if isinstance(users, str):
+            error_html += f"<div class='alert alert-warning'>Erreur utilisateurs: {users}</div>"
+            user_rows = ["<option value=''>Aucun utilisateur disponible</option>"]
+        elif users:
+            for user in users:
+                try:
+                    user_rows.append(f"""<option value={user.id}>{user.name}</option>""")
+                except AttributeError as e:
+                    print(f"User object error: {e}")
+        
+        # Gestion sécurisée des produits
+        product_rows = []
+        if isinstance(products, str):
+            error_html += f"<div class='alert alert-warning'>Erreur produits: {products}</div>"
+            product_rows = ["<option value=''>Aucun produit disponible</option>"]
+        elif products:
+            for product in products:
+                try:
+                    product_rows.append(f"""<option value={product.id}>{product.name} (${product.price})</option>""")
+                except AttributeError as e:
+                    print(f"Product object error: {e}")
+                    
+    except Exception as e:
+        print(f"Error in show_order_form: {e}")
+        error_html = f"<div class='alert alert-danger'>Erreur générale: {str(e)}</div>"
+        order_rows = []
+        user_rows = ["<option value=''>Erreur de chargement</option>"]
+        product_rows = ["<option value=''>Erreur de chargement</option>"]
     return get_template(f"""
         <h2>Commandes</h2>
+        {error_html}
         <p>Voici les 10 derniers enregistrements :</p>
         <table class="table">
             <tr>
