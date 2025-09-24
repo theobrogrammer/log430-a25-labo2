@@ -3,6 +3,12 @@ Tests for orders manager
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
+import sys
+import os
+
+# Ajouter le répertoire parent (src/) au Python path pour les imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from commands.write_order import sync_all_orders_to_redis
 from controllers.order_controller import create_order, remove_order
 from db import get_redis_conn
