@@ -19,6 +19,9 @@ class StoreManager(BaseHTTPRequestHandler):
         if self.path == "/" or self.path == "/home":
             self._send_html(show_main_menu())
             return
+        if self.path == "/debug":
+            self._send_html(self._debug_connections())
+            return
         if self.path == "/users":
             self._send_html(show_user_form())
         elif self.path.startswith("/users/remove/"):
@@ -91,6 +94,73 @@ class StoreManager(BaseHTTPRequestHandler):
         self.send_header("Content-type", self.get_mimetype("html"))
         self.end_headers()
         self.wfile.write(html.encode("utf-8"))
+
+    def _debug_connections(self):
+        """ Debug endpoint to test database connections """
+        import os
+        from dotenv import load_dotenv
+        
+        debug_output = ["<h1>Debug Connexions</h1>"]
+        
+        # Test config loading
+        debug_output.append("<h2>1. Configuration</h2>")
+        try:
+            load_dotenv('a.env')
+            debug_output.append(f"<p>DB_HOST: {os.getenv('DB_HOST')}</p>")
+            debug_output.append(f"<p>DB_PORT: {os.getenv('DB_PORT')}</p>")
+            debug_output.append(f"<p>DB_NAME: {os.getenv('DB_NAME')}</p>")
+            debug_output.append(f"<p>DB_USER: {os.getenv('DB_USER')}</p>")
+            debug_output.append(f"<p>REDIS_HOST: {os.getenv('REDIS_HOST')}</p>")
+            debug_output.append(f"<p>REDIS_PORT: {os.getenv('REDIS_PORT')}</p>")
+        except Exception as e:
+            debug_output.append(f"<p style='color:red'>Erreur config: {e}</p>")
+        
+        # Test MySQL
+        debug_output.append("<h2>2. Test MySQL</h2>")
+        try:
+            import mysql.connector
+            import config
+            conn = mysql.connector.connect(
+                host=config.DB_HOST,
+                port=config.DB_PORT,
+                user=config.DB_USER,
+                password=config.DB_PASS,
+                database=config.DB_NAME
+            )
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM users")
+            result = cursor.fetchone()
+            debug_output.append(f"<p style='color:green'>✓ MySQL OK - {result[0]} utilisateurs</p>")
+            conn.close()
+        except Exception as e:
+            debug_output.append(f"<p style='color:red'>✗ MySQL Erreur: {e}</p>")
+        
+        # Test Redis
+        debug_output.append("<h2>3. Test Redis</h2>")
+        try:
+            import redis
+            import config
+            r = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, db=config.REDIS_DB, decode_responses=True)
+            r.ping()
+            keys = r.keys("*")
+            debug_output.append(f"<p style='color:green'>✓ Redis OK - {len(keys)} clés</p>")
+        except Exception as e:
+            debug_output.append(f"<p style='color:red'>✗ Redis Erreur: {e}</p>")
+        
+        # Test SQLAlchemy
+        debug_output.append("<h2>4. Test SQLAlchemy</h2>")
+        try:
+            from db import get_sqlalchemy_session
+            session = get_sqlalchemy_session()
+            result = session.execute("SELECT COUNT(*) FROM users")
+            count = result.fetchone()[0]
+            debug_output.append(f"<p style='color:green'>✓ SQLAlchemy OK - {count} utilisateurs</p>")
+            session.close()
+        except Exception as e:
+            debug_output.append(f"<p style='color:red'>✗ SQLAlchemy Erreur: {e}</p>")
+        
+        debug_output.append("<p><a href='/'>Retour</a></p>")
+        return "".join(debug_output)
 
 if __name__ == "__main__":
     server = HTTPServer(("0.0.0.0", 5000), StoreManager)
