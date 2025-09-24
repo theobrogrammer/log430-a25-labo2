@@ -26,15 +26,61 @@ Ensuite, clonez votre dépôt sur votre ordinateur et sur votre serveur de dépl
 ### 2. Créez un fichier .env
 Créez un fichier `.env` basé sur `.env.example`. Dans le fichier `.env`, utilisez les mêmes identifiants que ceux mentionnés dans `docker-compose.yml`. Veuillez suivre la même approche que pour le laboratoire 01.
 
-### 3. Ouvrez le port 5000 dans la conteneur
+### 3. Ouvrez le port 5000 dans le conteneur
 Les services dans le conteneur sont isolés par défaut. Dans le fichier `docker-compose.yml`, faites une correspondance entre le port 5000 du service `store_manager` et le port 5000 de votre ordinateur pour utiliser l'interface Web. 
-```bash
+
+**✅ Cette modification a déjà été appliquée dans le fichier `docker-compose.yml` :**
+```yaml
 ports:
     - "5000:5000"
 ```
-> > 📝 **NOTE 1** : Si votre conteneur est dans une machine virtuelle et vous voulez accéder au port 5000 à partir de votre ordinateur de développement, il sera nécessaire également d'ouvrir la porte 5000 de la machine virtuelle à l'extérieur dans le pare-feu.
 
-> > 📝 **NOTE 2** : Si, à tout moment, vous décidez d'exécuter l'application sur votre machine hôte plutôt que sur Docker, veillez à arrêter au préalable le service `store_manager` dans Docker. Sinon, votre application ne fonctionnera pas car le port 5000 est déjà occupé.
+#### �️ Configuration pour accès via PuTTY (VM de l'école)
+Si vous utilisez PuTTY pour vous connecter à une VM de l'école (ex: 10.194.32.231), voici comment configurer l'accès :
+
+**1. Configuration du tunnel SSH dans PuTTY :**
+- Ouvrez PuTTY
+- Dans la section "Session", entrez l'IP de votre VM : `10.194.32.231`
+- Dans le menu de gauche, allez à : **Connection → SSH → Tunnels**
+- Ajoutez un tunnel :
+  - **Source port** : `5000`
+  - **Destination** : `localhost:5000` (ou `127.0.0.1:5000`)
+  - Cochez **Local**
+  - Cliquez sur **Add**
+- Retournez à "Session" et sauvegardez votre configuration
+- Connectez-vous à votre VM via PuTTY
+
+**2. Sur la VM, vérifiez que le port est ouvert :**
+```bash
+# Vérifiez si le port 5000 est utilisé
+sudo netstat -tlnp | grep :5000
+
+# Si nécessaire, ouvrez le port dans le pare-feu
+sudo ufw allow 5000
+sudo ufw reload
+```
+
+**3. Démarrez vos conteneurs Docker :**
+```bash
+docker compose build
+docker compose up -d
+```
+
+**4. Accédez à l'application depuis votre ordinateur local :**
+- Ouvrez votre navigateur
+- Allez à : `http://localhost:5000`
+- L'application devrait être accessible grâce au tunnel SSH !
+
+**Alternative : Accès direct par IP (si autorisé par l'école) :**
+Si la VM permet l'accès direct depuis l'extérieur :
+- Accédez directement à : `http://10.194.32.231:5000`
+- ⚠️ Vérifiez d'abord avec votre administrateur réseau si c'est autorisé
+
+> 📝 **NOTE 1** : Le tunnel SSH redirige le trafic de votre port local 5000 vers le port 5000 de la VM, permettant un accès sécurisé même si la VM n'accepte que les connexions SSH.
+
+> 📝 **NOTE 2** : Si, à tout moment, vous décidez d'exécuter l'application sur votre machine hôte plutôt que sur Docker, veillez à arrêter au préalable le service `store_manager` dans Docker. Sinon, votre application ne fonctionnera pas car le port 5000 est déjà occupé.
+
+> 📝 **NOTE 3** : Gardez votre session PuTTY ouverte tant que vous utilisez l'application, car elle maintient le tunnel SSH nécessaire.
 
 ### 4. Préparez l’environnement de développement
 Suivez les mêmes étapes que dans le laboratoire 01. La seule différence est que vous démarrerez le conteneur Docker en mode **non interactif**. Il s'agit d'une application Web, nous n'avons donc pas besoin d'interagir via la ligne de commande avec l'application.
