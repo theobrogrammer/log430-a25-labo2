@@ -14,28 +14,31 @@ Dans ce laboratoire, nous continuerons à développer l'application de gestion d
 
 > ⚠️ IMPORTANT : Avant de commencer le setup et les activités, veuillez lire la documentation architecturale dans le répertoire `/docs/arc42/docs.pdf`.
 
-### 1. Faites un fork et clonez le dépôt GitLab
+### 1. Clonez le dépôt
+Créez votre propre dépôt à partir du dépôt gabarit (template). Vous pouvez modifier la visibilité pour la rendre privée si vous voulez.
 ```bash
 git clone https://github.com/guteacher/log430-a25-labo2
 cd log430-a25-labo2
 ```
 
+Ensuite, clonez votre dépôt sur votre ordinateur et sur votre serveur de déploiement (ex. VM). **Veillez à ne pas cloner le dépôt d'origine**.
+
 ### 2. Créez un fichier .env
-Créez un fichier `.env` basé sur `.env.example`. Dans le fichier `.env`, utilisez les mêmes identifiants que ceux mentionnés dans `docker-compose.yml`.
+Créez un fichier `.env` basé sur `.env.example`. Dans le fichier `.env`, utilisez les mêmes identifiants que ceux mentionnés dans `docker-compose.yml`. Veuillez suivre la même approche que pour le laboratoire 01.
 
 ### 3. Ouvrez le port 5000 dans la conteneur
-Les services dans le conteneur sont isolés par défaut. Dans le fichier `docker-compose.yml`, faites une correspondence entre le port 5000 du service `store_manager` et le port 5000 de votre ordinateur pour utiliser l'interface Web. 
+Les services dans le conteneur sont isolés par défaut. Dans le fichier `docker-compose.yml`, faites une correspondance entre le port 5000 du service `store_manager` et le port 5000 de votre ordinateur pour utiliser l'interface Web. 
 ```bash
 ports:
     - "5000:5000"
 ```
-
-> > 📝 **NOTE** : Si votre conteneur est dans une machine virtuelle et vous voulez accéder le port 5000 à partir de votre ordinateur de développement, il sera nécessaire également d'ouvrir la porte 5000 de la machine virtuelle à l'exterieur.
+> > 📝 **NOTE 1** : Si votre conteneur est dans une machine virtuelle et vous voulez accéder au port 5000 à partir de votre ordinateur de développement, il sera nécessaire également d'ouvrir la porte 5000 de la machine virtuelle à l'extérieur dans le pare-feu.
+> > 📝 **NOTE 2** : Si, à tout moment, vous décidez d'exécuter l'application sur votre machine hôte plutôt que sur Docker, veillez à arrêter au préalable le service `store_manager` dans Docker. Sinon, votre application ne fonctionnera pas car le port 5000 est déjà occupé.
 
 ### 4. Préparez l’environnement de développement
-Suivez les mêmes étapes que dans le laboratoire 00. La seule différence est que vous démarrerez le conteneur Docker en mode non interactif.
+Suivez les mêmes étapes que dans le laboratoire 01. La seule différence est que vous démarrerez le conteneur Docker en mode **non interactif**. Il s'agit d'une application Web, nous n'avons donc pas besoin d'interagir via la ligne de commande avec l'application.
 ```bash
-docker build
+docker compose build
 docker compose up -d
 ```
 
@@ -51,6 +54,9 @@ Dans l'application de gestion de magasin, nous retrouvons l’implémentation de
 - **Repositories** : les modules des répertoires `commands` et `queries`, comme `write_order.py` et `read_order.py`, jouent le rôle de `Repository` dans l'application de gestion de magasin. Ils fournissent des méthodes telles que `add`, `delete` et `get`, et masquent les opérations de base de données réalisées via SQLAlchemy, tout en maintenant la ségrégation entre lecture et l'écriture. Dans un projet non CQRS, nous pourrions créer un seul fichier `order_repository.py` contenant toutes les opérations.
 
 Dans le cadre des activités, nous n'implémenterons pas directement les concepts DDD, mais nous utiliserons des modules qui les implémentent déjà, tels que `write_order.py`.
+
+### 6. Préparez l’environnement de déploiement et le pipeline CI/CD
+Utilisez les mêmes approches qui ont été abordées lors des laboratoires 00 et 01.
 
 ## 🧪 Activités pratiques
 
