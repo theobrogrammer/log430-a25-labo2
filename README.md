@@ -33,6 +33,7 @@ ports:
     - "5000:5000"
 ```
 > > 📝 **NOTE 1** : Si votre conteneur est dans une machine virtuelle et vous voulez accéder au port 5000 à partir de votre ordinateur de développement, il sera nécessaire également d'ouvrir la porte 5000 de la machine virtuelle à l'extérieur dans le pare-feu.
+
 > > 📝 **NOTE 2** : Si, à tout moment, vous décidez d'exécuter l'application sur votre machine hôte plutôt que sur Docker, veillez à arrêter au préalable le service `store_manager` dans Docker. Sinon, votre application ne fonctionnera pas car le port 5000 est déjà occupé.
 
 ### 4. Préparez l’environnement de développement
