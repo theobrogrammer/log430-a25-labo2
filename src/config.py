@@ -7,7 +7,8 @@ Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# Charger le fichier a.env au lieu de .env
+load_dotenv('a.env')
 
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = int(os.getenv("DB_PORT"))

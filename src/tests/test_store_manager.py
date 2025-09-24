@@ -5,9 +5,26 @@ Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 import sys
 import os
+from dotenv import load_dotenv
 
 # Ajouter le répertoire parent (src/) au Python path pour les imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Charger le fichier a.env depuis le répertoire racine du projet
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+env_file = os.path.join(project_root, 'a.env')
+load_dotenv(env_file)
+
+# Set environment variables for tests if not set (fallback)
+if not os.getenv('DB_HOST'):
+    os.environ['DB_HOST'] = 'mysql'
+    os.environ['DB_PORT'] = '3306'
+    os.environ['DB_NAME'] = 'labo02_db'
+    os.environ['DB_USER'] = 'labo02'
+    os.environ['DB_PASS'] = 'labo02'
+    os.environ['REDIS_HOST'] = 'redis'
+    os.environ['REDIS_PORT'] = '6379'
+    os.environ['REDIS_DB'] = '0'
 
 from commands.write_order import sync_all_orders_to_redis
 from controllers.order_controller import create_order, remove_order
