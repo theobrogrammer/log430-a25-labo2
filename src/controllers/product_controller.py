@@ -4,7 +4,7 @@ SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 from commands.write_product import add_product, delete_product_by_id
-from queries.read_product import get_products
+from queries.read_product import get_products, get_best_selling_products_from_redis
 
 def create_product(name, sku, price):
     """Create product, use WriteProduct model"""
@@ -31,3 +31,11 @@ def list_products(limit):
     except Exception as e:
         print(e)
         return "Une erreur s'est produite lors de la requête de base de données. Veuillez consulter les logs pour plus d'informations."
+
+def get_best_selling_products():
+    """Get best selling products report from Redis"""
+    try:
+        return get_best_selling_products_from_redis()
+    except Exception as e:
+        print(e)
+        return "Une erreur s'est produite lors de la génération du rapport. Veuillez consulter les logs pour plus d'informations."

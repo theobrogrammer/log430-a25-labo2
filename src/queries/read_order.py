@@ -113,3 +113,4 @@ def get_highest_spending_users():
     except Exception as e:
         print(f"Error retrieving highest spending users: {e}")
         return []
+
