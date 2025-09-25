@@ -84,7 +84,32 @@ def get_orders_from_redis(limit=9999):
         return []
 
 def get_highest_spending_users():
-    """Get report of best selling products"""
-    # TODO: écrivez la méthode
-    # triez le résultat par nombre de commandes (ordre décroissant)
-    return []
+    """Get report of highest spending users from Redis"""
+    from collections import defaultdict
+    
+    try:
+        # Récupérer toutes les commandes depuis Redis
+        orders = get_orders_from_redis()
+        
+        if not orders:
+            print("No orders found in Redis")
+            return []
+        
+        # Calculer les dépenses totales par utilisateur
+        expenses_by_user = defaultdict(float)
+        for order in orders:
+            expenses_by_user[order.user_id] += order.total_amount
+        
+        # Trier par total dépensé (ordre décroissant) et limiter au top 10
+        highest_spending_users = sorted(
+            expenses_by_user.items(), 
+            key=lambda item: item[1], 
+            reverse=True
+        )[:10]
+        
+        print(f"Found {len(highest_spending_users)} highest spending users")
+        return highest_spending_users
+        
+    except Exception as e:
+        print(f"Error retrieving highest spending users: {e}")
+        return []
